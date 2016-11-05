@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./navegacion.xhtml">
+
+            <ui:define name="content">
+                <p:dataTable value="#{documentoController.listaDocumentos}" var="documento"
+                             paginator="true" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15" rows="5">
+                    <f:facet name="header">
+                        <h:outputText value="Listado de Documentos Ingresados"/>
+                    </f:facet>
+                    <p:column headerText="N° Documento">
+                        <h:outputText value="#{documento.docNumero}" />
+                    </p:column>
+                    <p:column headerText="Tipo Documento">
+                        <h:outputText value="#{documento.docTdocId.tdocNombre}"/>
+                    </p:column>
+                    <p:column headerText="Proveedor">
+                        <h:outputText value="#{documento.docProvId.provRazonSocial}"/>
+                    </p:column>
+                    <p:column headerText="Tipo de proveedor">
+                        <h:outputText value="#{documento.docProvId.provTiproId.tiproNombre}"/>
+                    </p:column>
+                    <p:column headerText="Fecha Ingreso">
+                        <h:outputText value="#{documento.docFechaIngreso}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Estado Documento">
+                        <h:outputText value="#{documento.docEdocId.edocNombre}"/>
+                    </p:column>
+                    <c:choose>
+                        <c:when test="${pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}'}">
+
+                            <p:column headerText="Accion">
+                                <h:form>
+                                    <p:commandLink value="Editar" action="gestion.xhtml" ajax="false">
+                                        <f:setPropertyActionListener value="#{documento}" target="#{pproDocumento}" />
+                                    </p:commandLink>
+                                </h:form>
+                            </p:column>
+
+                        </c:when>
+                    </c:choose>
+
+
+                </p:dataTable>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

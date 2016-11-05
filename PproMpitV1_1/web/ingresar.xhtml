@@ -1,0 +1,472 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./navegacion.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="content">
+        <h:form id="formSeleccion">
+            <p:panelGrid id="panelSeleccion">
+                <p:inputSwitch onLabel="Existe" offLabel="Nuevo"  value="#{proveedorConroller.eleccion}" >
+                    <p:ajax update="pag"/>
+                </p:inputSwitch>
+            </p:panelGrid>
+        </h:form>
+        <p:panel id="pag">
+            <h:form id="formProveedor" enctype="multipart/form-data" rendered="#{proveedorConroller.eleccion == false}"> 
+                <p:growl id="msgs" showDetail="true"/>
+
+                <p:panelGrid styleClass="ui-panelgrid-blank" id="panelBuscador" style="width: 100%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="4">                        
+                                <h:outputText value="Busqueda de Proveedor Existente"/>                        
+                            </p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column colspan="2"><p:outputLabel for="rutProv" value="Rut de Proveedor"/></p:column>
+                        <p:column colspan="2">
+                            <p:autoComplete id="rutProv" value="#{pproDocumento.docProvId}"
+                                            completeMethod="#{proveedorConroller.completarProveedor}"
+                                            var="prov" itemLabel="#{prov.provPerId.perRut}"
+                                            itemValue="#{prov}" converter="valorConverted" forceSelection="true"
+                                            minQueryLength="2" required="true" requiredMessage="El rut del proveedor es necesario">
+                                <p:ajax event="itemSelect" listener="#{proveedorConroller.traeProveedor}"  
+                                        update=":formProveedor"/>
+                            </p:autoComplete>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+                <p:separator/>
+
+
+                <p:panelGrid styleClass="ui-panelgrid-blank" id="panelDatos" style="width: 100%" >
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="4">                        
+                                <h:outputText value="Datos de Proveedor"/>                          
+                            </p:column> 
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="razonSocial" value="Razon Social"/>
+                        </p:column>
+                        <p:column>
+
+                            <p:inputText id="razonSocial" value="#{pproDocumento.docProvId.provRazonSocial}" readonly="true"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="rutProveedor" value="Rut Proveedor"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="rutProveedor" value="#{pproDocumento.docProvId.provPerId.perRutComp}" readonly="true"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="direccion" value="Direccion"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="direccion" value="#{pproDocumento.docProvId.provPerId.perDireccion}" readonly="true"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="telefono" value="Telefono"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="telefono" value="#{pproDocumento.docProvId.provPerId.perTelefono}" readonly="true"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="numeroCuenta" value="Tipo de Proveedor"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="numeroCuenta" value="#{pproDocumento.docProvId.provTiproId.tiproNombre}" readonly="true"/>
+                        </p:column>
+
+
+                    </p:row>
+                </p:panelGrid>
+                <p:separator/>
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="4"><h:outputText value="Datos Representantes"/></p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="nombre" value="Nombre"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="nombre" value="#{pproDocumento.docProvId.provPerId.perNombre}" readonly="true"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="apellido" value="Apellido"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="apellido" value="#{pproDocumento.docProvId.provPerId.perApePaterno}" readonly="true"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:separator/>
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="2"><h:outputText value="Datos de Documento"/></p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="medioPago" value="Seleccione Tipo de Documento"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneRadio id="medioPago" value="#{pproDocumento.docTdocId}" converter="tipoDocConverted">
+                                <f:selectItems value="#{tipoDocumentoController.listaTipo}" var="tipo"
+                                               itemValue="#{tipo}" itemLabel="#{tipo.tdocNombre}"/>
+                                <p:ajax update="panel" listener="#{tipoDocumentoController.seleccion}"/>
+                            </p:selectOneRadio>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+
+
+                <p:panel widgetVar="panel" header="Datos de Documento" id="panel">
+
+                    <h:panelGrid columns="2" style="width: 100%">
+
+                        <c:choose>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == null}">
+                            </c:when>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Factura'}">
+
+                                <p:column>
+                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                    <p:inputText id="nDoc" value="#{pproDocumento.docNumero}">
+                                        <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                    </p:inputText>
+                                </p:column>
+                                <p:column>
+                                    <p:outputLabel for="formaPago" value="Forma de Pago:"/>
+                                    <p:selectOneMenu value="#{pproDocumento.docFormPagId}" id="formaPago"
+                                                     converter="formaPagoConverter">
+                                        <f:selectItem itemValue="#{null}" itemLabel="Seleccione"/>
+                                        <f:selectItems value="#{formaPagoController.listaFormaPago}"
+                                                       var="formaPago" itemLabel="#{formaPago.fpagNombre}"
+                                                       itemValue="#{formaPago}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <p:outputLabel for="fechaFactura" value="Fecha Factura:"/>
+                                    <p:calendar id="fechaFactura" value="#{pproFactura.facFecha}" showOn="button" 
+                                                required="true" requiredMessage="El campo no puede estar vacio" pattern="dd/MM/yyyy"/>
+                                </p:column>
+                                <h:panelGrid style="width: 50%" columns="2">
+                                    <p:outputLabel for="pdfFactura" value="Pdf de Factura"/>
+                                    <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfFactura" value="#{documentoController.pdfFactura}" 
+                                                   update="msgs" sizeLimit="1000000" skinSimple="true">
+                                        <f:validator validatorId="validadorArchivo"/>
+                                    </p:fileUpload>
+
+
+                                    <c:choose>
+                                        <c:when test="${pproDocumento.docProvId.provTiproId.tiproId ==1}">
+
+                                            <p:outputLabel for="pdfOrdenCompra" value="Pdf de O/C"/>
+                                            <p:fileUpload mode="simple" dragDropSupport="true" id="pdfOrdenCompra" value="#{documentoController.pdfOc}" 
+                                                          update="msgs" sizeLimit="1000000" skinSimple="true">
+                                                <f:validator validatorId="validadorArchivo"/>
+                                            </p:fileUpload>
+                                            <p:outputLabel for="pdfRecepcion" value="Pdf de Recepcion"/>
+                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfRecepcion" value="#{documentoController.pdfRecepcion}" 
+                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
+                                                <f:validator validatorId="validadorArchivo"/>
+                                            </p:fileUpload>
+                                        </c:when>
+                                        <c:when test="${pproDocumento.docProvId.provTiproId.tiproId==2}">
+                                            <p:outputLabel for="pdfContrato" value="Pdf Contrato"/>
+                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfContrato" value="#{documentoController.pdfContrato}" 
+                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
+                                                <f:validator validatorId="validadorArchivo"/>
+                                            </p:fileUpload>
+                                            <p:outputLabel for="pdfRealizado" value="Pdf Conformidad"/>
+                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfRealizado" value="#{documentoController.pdfRealizado}" 
+                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
+                                                <f:validator validatorId="validadorArchivo"/>
+                                            </p:fileUpload>
+                                        </c:when>
+                                    </c:choose>                            
+                                </h:panelGrid>
+                                <h:panelGrid style="width: 50%" columns="2">
+                                    <p:outputLabel for="neto" value="Neto:"/>
+                                    <p:inputNumber id="neto" value="#{pproFactura.facNeto}" >
+                                        <p:ajax listener="#{documentoController.calculaIva}" update="iva monto"/>
+                                    </p:inputNumber>
+                                    <p:outputLabel for="iva" value="19% IVA:"/>
+                                    <p:inputNumber id="iva" value="#{pproFactura.facIva}"  readonly="true"/>
+                                    <p:outputLabel for="monto" value="Total factura:"/>
+                                    <p:inputNumber id="monto" value="#{pproFactura.facMonto}" readonly="true"/>
+                                </h:panelGrid>
+                            </c:when>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Boleta'}">
+                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}">
+                                    <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                </p:inputText>
+                                <p:outputLabel for="pdfBoleta" value="Agregue Pdf de la Boleta"/>
+                                <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfBoleta" value="#{documentoController.pdfBoleta}" 
+                                               update="msgs" sizeLimit="1000000" skinSimple="true">
+                                    <f:validator validatorId="validadorArchivo"/>
+                                </p:fileUpload>
+                            </c:when>
+                            <c:otherwise>
+                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"/>
+                                <p:outputLabel for="pdfNotaCredito" value="Pdf Nota Credito "/>
+                                <p:fileUpload mode="simple" id="pdfNotaCredito" value="#{documentoController.pdfNotaCredito}" 
+                                              update="msgs" sizeLimit="1000000" skinSimple="true">
+                                    <f:validator validatorId="validadorArchivo"/>
+                                </p:fileUpload>
+                            </c:otherwise>
+                        </c:choose>
+                    </h:panelGrid>                    
+
+                </p:panel>
+
+
+
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton value="Limpiar" actionListener="#{documentoController.reset}" 
+                                                 immediate="true" ajax="false" process="@this" update=":formProveedor">
+                                    <p:resetInput target=":formProveedor" />
+                                </p:commandButton>
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton value="Guardar" actionListener="#{documentoController.grabar}" ajax="false">
+
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </f:facet>
+                </p:panelGrid>
+            </h:form>
+
+            <!-- proveedor nuevo-->
+
+            <h:form id="formProveedorNuevo"  enctype="multipart/form-data" rendered="#{proveedorConroller.eleccion == true}"> 
+                <p:growl id="msgs" showDetail="true"/>
+
+
+                <p:panelGrid styleClass="ui-panelgrid-blank" id="panelDatosNuevos" style="width: 100%" >
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="4">                        
+                                <h:outputText value="Creacion de Proveedor"/>                          
+                            </p:column> 
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="razonSocialNueva" value="Razon Social"/>
+                        </p:column>
+                        <p:column>                       
+                            <p:inputText id="razonSocialNueva" value="#{pproProveedor.provRazonSocial}" required="true" requiredMessage="El campo no puede estar vacio"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="rutProveedorNuevo" value="Rut Proveedor"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="rutProveedorNuevo" value="#{pproPersona.perRutComp}" required="true" requiredMessage="El campo no puede estar vacio">
+                                <p:ajax event="change" listener="#{proveedorConroller.validaRutProv()}" update="msgs rutProveedorNuevo"/>
+                                <f:validator validatorId="validadorRut"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="direccionNueva" value="Direccion"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="direccionNueva" value="#{pproPersona.perDireccion}"  required="true" requiredMessage="El campo no puede estar vacio"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="telefonoNuevo" value="Telefono"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="telefonoNuevo" value="#{pproPersona.perTelefono}" required="true" requiredMessage="El campo no puede estar vacio"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="tipoProveedor" value="Tipo de Proveedor"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="tipoProveedor" value="#{pproProveedor.provTiproId}"
+                                             converter="tipoProvConverter" required="true" requiredMessage="El campo no puede estar vacio">
+                                <f:selectItem itemLabel="Seleccione Tipo" itemValue="#{null}" />
+                                <f:selectItems value="#{tipoProveedorController.listaTipoProv}" 
+                                               var="tipoProv"  itemLabel="#{tipoProv.tiproNombre}" itemValue="#{tipoProv}" />                                
+                            </p:selectOneMenu>
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+                <p:separator/>
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="4"><h:outputText value="Datos Representantes"/></p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="nombreNuevo" value="Nombre"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="nombreNuevo" value="#{pproPersona.perNombre}" required="true" requiredMessage="El campo no puede estar vacio" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="apellidoNuevo" value="Apellido"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="apellidoNuevo" value="#{pproPersona.perApePaterno}" required="true" requiredMessage="El campo no puede estar vacio"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:separator/>
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="2"><h:outputText value="Datos de Documento"/></p:column>
+                        </p:row>
+                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="medioPago" value="Seleccione Tipo de Documento"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneRadio id="medioPago" value="#{pproDocumento.docTdocId}" converter="tipoDocConverted" 
+                                              required="true" requiredMessage="El campo no puede estar vacio">
+                                <f:selectItems value="#{tipoDocumentoController.listaTipo}" var="tipoNuevo"
+                                               itemValue="#{tipoNuevo}" itemLabel="#{tipoNuevo.tdocNombre}"/>
+                                <p:ajax update="panel" listener="#{tipoDocumentoController.seleccion}"/>
+                            </p:selectOneRadio>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <!--</h:form>
+                <h:form enctype="multipart/form-data" id="formDoc" rendered="#{proveedorConroller.eleccion == true}">-->
+
+                <!-- <p:growl id="msgs" showDetail="true"/>-->
+                <p:panel widgetVar="panel" header="Datos de Documento" id="panel">
+
+                    <h:panelGrid columns="3" style="width: 100%">
+
+                        <c:choose>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == null}">
+                            </c:when>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Factura'}">
+
+                                <p:column>
+                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}" required="true" requiredMessage="El campo no puede estar vacio">
+                                    <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                </p:inputText>
+                                </p:column>
+                                 <p:column>
+                                    <p:outputLabel for="formaPagoNuevo" value="Forma de Pago:"/>
+                                    <p:selectOneMenu value="#{pproDocumento.docFormPagId}" id="formaPagoNuevo"
+                                                     converter="formaPagoConverter" required="true" requiredMessage="El campo no puede estar vacio">
+                                        <f:selectItem itemValue="#{null}" itemLabel="Seleccione"/>
+                                        <f:selectItems value="#{formaPagoController.listaFormaPago}"
+                                                       var="formaPagoNew" itemLabel="#{formaPagoNew.fpagNombre}"
+                                                       itemValue="#{formaPagoNew}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <p:outputLabel for="fechaFactura" value="Fecha Factura:"/>
+                                    <p:calendar id="fechaFactura" value="#{pproFactura.facFecha}" showOn="button" 
+                                                required="true" requiredMessage="El campo no puede estar vacio" pattern="dd/MM/yyyy"/>
+                                </p:column>
+                                <h:panelGrid style="width: 50%" columns="2">
+                                    <p:outputLabel for="pdfFactura" value="Pdf de Factura"/>
+                                    <p:fileUpload  mode="simple" id="pdfFactura" value="#{documentoController.pdfFactura}" 
+                                                   update="msgs" skinSimple="true"  required="true" requiredMessage="El campo no puede estar vacio">
+                                        <f:validator validatorId="validadorArchivo"/>
+                                    </p:fileUpload>
+                         
+                                </h:panelGrid>
+                                <h:panelGrid style="width: 50%" columns="2">
+                                    <p:outputLabel for="neto" value="Neto:"/>
+                                    <p:inputNumber id="neto" value="#{pproFactura.facNeto}" required="true" requiredMessage="El campo no puede estar vacio" >
+                                        <p:ajax listener="#{documentoController.calculaIva}" update=":formProveedorNuevo:iva :formProveedorNuevo:monto"/>
+                                    </p:inputNumber>
+                                    <p:outputLabel for="iva" value="19% IVA:"/>
+                                    <p:inputNumber id="iva" value="#{pproFactura.facIva}"  readonly="true"/>
+                                    <p:outputLabel for="monto" value="Total factura:"/>
+                                    <p:inputNumber id="monto" value="#{pproFactura.facMonto}" readonly="true"/>
+                                </h:panelGrid>
+
+
+
+                            </c:when>
+                            <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Boleta'}">
+                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"  required="true" requiredMessage="El campo no puede estar vacio">
+                                    <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                </p:inputText>
+                                <p:outputLabel for="pdfBoleta" value="Agregue Pdf de la Boleta"/>
+                                <p:fileUpload  mode="simple" id="pdfBoleta" value="#{documentoController.pdfBoleta}" 
+                                               update="msgs" skinSimple="true"  required="true" requiredMessage="El campo no puede estar vacio"
+                                               fileUploadListener="#{documentoController.validTipo(documentoController.pdfBoleta)}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"/>
+                                <p:outputLabel for="pdfNotaCredito" value="Pdf Nota Credito "/>
+                                <p:fileUpload mode="simple" id="pdfNotaCredito" value="#{documentoController.pdfNotaCredito}" 
+                                              update="msgs" skinSimple="true" required="true" requiredMessage="El campo no puede estar vacio"
+                                              fileUploadListener="#{documentoController.validTipo(documentoController.pdfNotaCredito)}"/>
+                                <p:outputLabel for="motivoNota" value="Motivo de la Nota de Credito"/>  
+                                <p:inputTextarea rows="6" cols="33" id="motivoNota" />
+                            </c:otherwise>
+                        </c:choose>
+                    </h:panelGrid>                    
+
+                </p:panel>
+
+
+
+                <p:panelGrid style="width: 100%">
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton value="Limpiar" actionListener="#{documentoController.reset}" 
+                                                 immediate="true" ajax="false" process="@this" update=":formProveedor">
+                                    <p:resetInput target=":formProveedorNuevo" />
+                                </p:commandButton>
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton value="Guardar" actionListener="#{documentoController.grabarNuevo}"
+                                                 update="msgs" ajax="false">
+
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </f:facet>
+                </p:panelGrid>
+            </h:form>
+        </p:panel>
+    </ui:define>
+
+</ui:composition>

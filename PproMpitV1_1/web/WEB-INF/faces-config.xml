@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <application>
+        <locale-config>
+            <default-locale>es</default-locale>
+        </locale-config>
+        <!--etiquetas del formulario-->
+        <resource-bundle>
+            <base-name>mensajes</base-name>
+            <var>msgs</var>
+        </resource-bundle>
+        <resource-bundle>
+            <base-name>labels</base-name>
+            <var>label</var>
+        </resource-bundle>
+        <message-bundle>jsf</message-bundle>
+        <resource-bundle>
+            <base-name>/MyBundle</base-name>
+            <var>myBundle</var>
+        </resource-bundle>
+    </application>
+    <application>
+        <navigation-handler>
+            org.primefaces.mobile.application.MobileNavigationHandler
+        </navigation-handler>
+    </application>
+
+</faces-config>

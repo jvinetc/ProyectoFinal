@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <meta name="viewport" content="width=device-width, user-scalable=no"/>
+    <body>
+        <div class="ui-fluid">
+            <ui:composition template="./navegacion.xhtml">
+                <ui:define name="content">
+                    <h:form id="formularioVista">
+                        <p:dataTable value="#{documentoController.listaDocumentos}" var="documento">
+                            <f:facet name="header">
+                                <p:outputLabel value="Lista de Documentos"/>
+                            </f:facet> 
+                            <p:column headerText="Numero Documento" style="width:10%">  
+
+                                <h:outputText value="#{documento.docNumero}" rendered="#{documento.docTdocId.tdocNombre != 'Factura'}"/>
+
+                                <p:commandLink update=":formularioVista:facturaDetalle" oncomplete="PF('detalle').show()" 
+                                               value="#{documento.docNumero}" rendered="#{documento.docTdocId.tdocNombre == 'Factura'}">
+                                    <f:setPropertyActionListener value="#{documento.pproFacturaCollection.iterator().next()}" target="#{pproFactura}" />
+                                </p:commandLink>
+
+                            </p:column>
+                            <p:column headerText="Tipo Documento" style="width:11%">
+                                <h:outputText value="#{documento.docTdocId.tdocNombre}"/>
+                            </p:column>
+
+                            <p:column headerText="Usuario Ingreso" style="width:17%">
+                                <h:outputText value="#{documento.docUsuIngresa.usuPerId.perNombre} #{documento.docUsuIngresa.usuPerId.perApePaterno}"/>
+                            </p:column>
+                            <p:column headerText="Documento" style="width:20%">
+                                <p:link href="#{documento.docRuta}" target="_blank" value="#{documento.docNombre}">
+                                </p:link>
+                            </p:column>
+                            <p:column headerText="Anexos" style="width:20%">
+                                <p:dataList value="#{documento.pproAnexoDocumentoCollection.stream().toArray()}" var="anexo">
+                                    <p:link href="#{anexo.aneRuta}" target="_blank" value="#{anexo.aneNombre}">
+                                        <!--<p:graphicImage name="demo/images/pdf.png"/>-->
+                                    </p:link>
+                                </p:dataList>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:dialog widgetVar="detalle" showEffect="fade" hideEffect="fade" resizable="false" header="Detalle Documento">
+                            <p:outputPanel id="facturaDetalle" style="text-align:center;">
+                                <p:panelGrid  columns="2" rendered="#{not empty pproFactura}" columnClasses="label,value" >
+                                    <f:facet name="header">
+                                        <h:outputText value="Factura N° #{pproFactura.facDocId.docNumero}"/>
+                                    </f:facet>
+                                        <h:outputText value="Neto:" />
+                                        <h:outputText value="$#{pproFactura.facNeto}.-" />
+
+                                        <h:outputText value="I.V.A" />
+                                        <h:outputText value="$#{pproFactura.facIva}.-" />
+
+                                        <h:outputText value="Total:" />
+                                        <h:outputText value="$#{pproFactura.facMonto}.-"/>
+                                                                  
+                                </p:panelGrid>
+                            </p:outputPanel>
+                        </p:dialog>
+
+                    </h:form>
+                </ui:define> 
+            </ui:composition>
+        </div>
+    </body>
+</html>
