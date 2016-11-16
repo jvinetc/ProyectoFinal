@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -33,9 +35,11 @@ import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.UploadedFile;
 import ppro.modelo.PproAnexoDocumento;
 import ppro.modelo.PproDocumento;
+import ppro.modelo.PproEstadoDocumento;
 import ppro.modelo.PproUsuario;
 import ppro.servicio.AnexoServicio;
 import ppro.servicio.DocumentoServicio;
+import ppro.servicio.EstadoDocServicio;
 
 /**
  *
@@ -50,6 +54,9 @@ public class GestionController {
 
     @EJB
     private AnexoServicio anexoServicio;
+    
+    @EJB
+    private EstadoDocServicio estadoDocServicio;
 
     @ManagedProperty(value = "#{pproDocumento}")
     private PproDocumento pproDocumento;
@@ -60,11 +67,19 @@ public class GestionController {
     private final String destinoBoleta = "\\boleta\\";
     private final String destinoNota = "\\notaCredito\\";
     private final String destinoAnexo = "\\anexos\\";
+    
+    private List<PproDocumento> listaSeleccion=new ArrayList<>();
 
     private UploadedFile pdfFactura;
     private UploadedFile pdfBoleta;
     private UploadedFile pdfNotaCredito;
     private UploadedFile pdfAnexo;
+    
+     @ManagedProperty(value = "#{pproEstadoDocumento}")
+    private PproEstadoDocumento pproEstadoDocumento;
+    PproUsuario pproUsuario = (PproUsuario) FacesContext.
+            getCurrentInstance().getExternalContext().
+            getSessionMap().get("pproUsuario");
 
     public PproDocumento getPproDocumento() {
         return pproDocumento;
@@ -96,8 +111,8 @@ public class GestionController {
                 addMessage(null, new FacesMessage("Archivo Subido " + pdfFactura.getFileName()));
         pproDocumento.setDocRuta(destino + destinoFacura + fechaActual + "@" + pdfFactura.getFileName());
         pproDocumento.setDocNombre(pdfFactura.getFileName());
-        PproUsuario pproUsuario = (PproUsuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pproUsuario");
-        pproDocumento.setDocUsuModifica(pproUsuario);
+        PproUsuario pproUsuario2 = (PproUsuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pproUsuario");
+        pproDocumento.setDocUsuModifica(pproUsuario2);
         if (documentoServicio.actualizar(pproDocumento)) {
             FacesContext.getCurrentInstance().
                     addMessage(null, new FacesMessage("El documento fue actualizado con exito"));
@@ -196,5 +211,58 @@ public class GestionController {
     public void setPdfAnexo(UploadedFile pdfAnexo) {
         this.pdfAnexo = pdfAnexo;
     }
+    
+    public void autorizarDocumento(){
+        if (!listaSeleccion.isEmpty()) {
+            pproEstadoDocumento = estadoDocServicio.buscarEstado(2);
+            for (PproDocumento pproDoc : listaSeleccion) {
+                pproDoc.setDocEdocId(pproEstadoDocumento);
+                pproDoc.setDocUsuAutoriza(pproUsuario);
+                if (!documentoServicio.actualizar(pproDoc)) {
+                     FacesContext.getCurrentInstance().
+                                addMessage(null, new FacesMessage("La accion no ha podido ser realizada"));
+                    return;
+                }
+            }
+            RequestContext.getCurrentInstance().reset("formEscritorio");
+             FacesContext.getCurrentInstance().
+                                addMessage(null, new FacesMessage("Los Documentos han sido Autorizados"));
+             
+             
+        }
+    }
+    
+    public void rechazarDocumento(){
+         if (!listaSeleccion.isEmpty()) {
+            pproEstadoDocumento = estadoDocServicio.buscarEstado(5);
+            for (PproDocumento pproDoc : listaSeleccion) {
+                pproDoc.setDocEdocId(pproEstadoDocumento);
+                pproDoc.setDocUsuAutoriza(pproUsuario);
+                if (!documentoServicio.actualizar(pproDoc)) {
+                     FacesContext.getCurrentInstance().
+                                addMessage(null, new FacesMessage("Imposible realizar la accion"));
+                    return;
+                }
+            }
+             FacesContext.getCurrentInstance().
+                                addMessage(null, new FacesMessage("Los documentos han sido rechazados"));
+              RequestContext.getCurrentInstance().reset("formEscritorio");
+        }
+    }
 
+    public List<PproDocumento> getListaSeleccion() {
+        return listaSeleccion;
+    }
+
+    public void setListaSeleccion(List<PproDocumento> listaSeleccion) {
+        this.listaSeleccion = listaSeleccion;
+    }
+
+    public PproEstadoDocumento getPproEstadoDocumento() {
+        return pproEstadoDocumento;
+    }
+
+    public void setPproEstadoDocumento(PproEstadoDocumento pproEstadoDocumento) {
+        this.pproEstadoDocumento = pproEstadoDocumento;
+    }
 }

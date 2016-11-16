@@ -32,8 +32,7 @@ import ppro.servicio.TipoAnexoServicio;
 import ppro.servicio.TipoDocumentoServicio;
 import java.io.File;
 import java.io.IOException;
-import javax.el.ELContextListener;
-import javax.faces.bean.RequestScoped;
+import java.io.Serializable;
 import javax.faces.bean.ViewScoped;
 
 import javax.faces.context.FacesContext;
@@ -50,7 +49,7 @@ import ppro.servicio.ProveedorServicio;
  */
 @ManagedBean
 @ViewScoped
-public class DocumentoController {
+public class DocumentoController implements Serializable {
 
     @EJB
     private PproTipoPersonaFacade pproTipoPersonaFacade;
@@ -78,7 +77,6 @@ public class DocumentoController {
 
     @EJB
     private TipoAnexoServicio tipoAnexoServicio;
-    
 
     private final String pathAbsoluto = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
     private final String destino = "resources\\tmp";
@@ -98,9 +96,17 @@ public class DocumentoController {
     private PproPersona pproPersona;
     @ManagedProperty(value = "#{pproProveedor}")
     private PproProveedor pproProveedor;
-    
-    
-    
+
+    private Date now = new Date(System.currentTimeMillis());
+
+    public Date getNow() {
+        return now;
+    }
+
+    public void setNow(Date now) {
+        this.now = now;
+    }
+
     public PproEstadoDocumento getPproEstadoDocumento() {
         return pproEstadoDocumento;
     }
@@ -124,6 +130,13 @@ public class DocumentoController {
     private List<PproDocumento> listaDocumentos = new ArrayList<>();
 
     private List<PproFactura> listaFactura = new ArrayList<>();
+    
+    private List<PproDocumento> listaIngresado= new ArrayList<>();
+    
+    private List<PproDocumento> listaAutorizados= new ArrayList<>();
+    
+    private List<PproDocumento> listaPagados= new ArrayList<>();
+    
 
     public PproDocumento getPproDocumento() {
         return pproDocumento;
@@ -417,6 +430,12 @@ public class DocumentoController {
     public void listarDocumenos() {
         listaFactura = facturaServicio.listaFactura();
         listaDocumentos = documentoServicio.listaDocumento();
+        PproEstadoDocumento estadoDocIngresado= estadoDocServicio.buscarEstado(1);
+        PproEstadoDocumento estadoDocAutorizado= estadoDocServicio.buscarEstado(2);
+        PproEstadoDocumento estadoDocPagado= estadoDocServicio.buscarEstado(3);
+        listaAutorizados= documentoServicio.listaPorEstado(estadoDocAutorizado);
+        listaIngresado= documentoServicio.listaPorEstado(estadoDocIngresado);
+        listaPagados= documentoServicio.listaPorEstado(estadoDocPagado);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pproDocumento", null);
         // FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().remove("pproDocumento");
         //FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().remove("pproProveedor");
@@ -480,11 +499,11 @@ public class DocumentoController {
     }
 
     public void grabarNuevo() throws IOException, InterruptedException {
-        PproTipoPersona tipoPersona= pproTipoPersonaFacade.find(2);
+        PproTipoPersona tipoPersona = pproTipoPersonaFacade.find(2);
         pproPersona.setPerTiperId(tipoPersona);
         pproProveedor.setProvPerId(pproPersona);
         pproDocumento.setDocProvId(pproProveedor);
-        
+
         String rut = pproDocumento.getDocProvId().getProvPerId().getPerRutComp().toUpperCase();
         rut = rut.replace(".", "");
         rut = rut.replace("-", "");
@@ -499,11 +518,11 @@ public class DocumentoController {
                 Thread.sleep(5000);
                 return;
             }
-        }else{
+        } else {
             FacesContext.getCurrentInstance().
-                        addMessage(null, new FacesMessage("La persona no ha podido ser grabada"));
-                Thread.sleep(5000);
-                return;
+                    addMessage(null, new FacesMessage("La persona no ha podido ser grabada"));
+            Thread.sleep(5000);
+            return;
         }
 
         pproDocumento.setDocUsuIngresa(pproUsuario);
@@ -539,7 +558,7 @@ public class DocumentoController {
                         FacesContext.getCurrentInstance().
                                 addMessage(null, new FacesMessage("Registros no guardados"));
                     }
-                    
+
                     FacesContext.getCurrentInstance().getExternalContext().redirect("escritorio.xhtml");
                 } else {
                     FacesContext.getCurrentInstance().
@@ -608,5 +627,29 @@ public class DocumentoController {
 
     public void setPproProveedor(PproProveedor pproProveedor) {
         this.pproProveedor = pproProveedor;
+    }
+
+    public List<PproDocumento> getListaIngresado() {
+        return listaIngresado;
+    }
+
+    public void setListaIngresado(List<PproDocumento> listaIngresado) {
+        this.listaIngresado = listaIngresado;
+    }
+
+    public List<PproDocumento> getListaAutorizados() {
+        return listaAutorizados;
+    }
+
+    public void setListaAutorizados(List<PproDocumento> listaAutorizados) {
+        this.listaAutorizados = listaAutorizados;
+    }
+
+    public List<PproDocumento> getListaPagados() {
+        return listaPagados;
+    }
+
+    public void setListaPagados(List<PproDocumento> listaPagados) {
+        this.listaPagados = listaPagados;
     }
 }

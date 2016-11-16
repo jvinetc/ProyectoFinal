@@ -5,6 +5,7 @@
  */
 package ppro.contoller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -22,7 +23,7 @@ import ppro.servicio.MenuServicio;
  */
 @ManagedBean
 @SessionScoped
-public class MenuController {
+public class MenuController implements Serializable{
 
     @EJB
     private MenuServicio menuServicio;

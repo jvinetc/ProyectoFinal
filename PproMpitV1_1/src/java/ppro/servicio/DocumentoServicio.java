@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import ppro.modelo.PproDocumento;
+import ppro.modelo.PproEstadoDocumento;
 
 /**
  *
@@ -84,5 +85,11 @@ public class DocumentoServicio {
          } catch (Exception e) {
          }
          return false;
+     }
+     
+     public List<PproDocumento> listaPorEstado(PproEstadoDocumento estadoDocumento){
+         Query query=em.createNamedQuery("PproDocumento.listarPorEstado");
+         query.setParameter("estadoDoc", estadoDocumento);
+         return query.getResultList();
      }
 }

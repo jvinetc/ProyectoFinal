@@ -44,10 +44,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproDocumento.findByDocNumero", query = "SELECT p FROM PproDocumento p WHERE p.docNumero = :docNumero"),
     @NamedQuery(name = "PproDocumento.findByDocRuta", query = "SELECT p FROM PproDocumento p WHERE p.docRuta = :docRuta"),
     @NamedQuery(name = "PproDocumento.buscarPorProv", query = "SELECT p FROM PproDocumento p WHERE p.docProvId = :docProvId"),
-    @NamedQuery(name = "PproDocumento.validarDocumento", query = "SELECT p FROM PproDocumento p INNER JOIN p.docProvId prov INNER JOIN prov.provPerId per WHERE per.perRutComp= :rutProv and p.docNumero = :nDoc")})
+    @NamedQuery(name = "PproDocumento.validarDocumento", query = "SELECT p FROM PproDocumento p INNER JOIN p.docProvId prov INNER JOIN prov.provPerId per WHERE per.perRutComp= :rutProv and p.docNumero = :nDoc"),
+@NamedQuery(name= "PproDocumento.listarPorEstado", query="SELECT p FROM PproDocumento p WHERE p.docEdocId=:estadoDoc")})
 @ManagedBean
 @SessionScoped
-
 public class PproDocumento implements Serializable {
 
     @Column(name = "doc_fecha_ingreso")

@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./navegacion.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="content">
+        <h:form id="formPago">
+            <p:growl id="msgs" showDetail="true"/>
+            <p:dataTable id="tablaPagar" value="#{documentoController.listaAutorizados}" var="documento"
+                         paginator="true" 
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                         rowsPerPageTemplate="10,15,20" rows="10"
+                         selection="#{pagarController.listaSeleccion}" rowKey="#{documento}"
+                         rowStyleClass="#{documento.docFechaIngreso.month eq documentoController.now.month ? 
+                                          ((documento.docFechaIngreso.date +3) le documentoController.now.date ? 'middle': 'new'):
+                                          (documento.docEdocId.edocId eq 3 ? 'autorizado': 'old')}">
+                <f:facet name="{Exporters}">
+                    <div style="float:right">
+                        <h:commandLink>
+                            <p:graphicImage name="demo/images/excel.png" width="24"/>
+                            <p:dataExporter type="xls" target="tablaPagar" fileName="tablaExportada" />
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <p:graphicImage name="demo/images/pdf.png" width="24"/>
+                            <p:dataExporter type="pdf" target="tablaPagar" fileName="tablaExportada" 
+                                                    preProcessor="#{exportController.preProcessPDF}" 
+                                                    postProcessor="#{exportController.postProcessPDF}"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <p:graphicImage name="demo/images/csv.png" width="24"/>
+                            <p:dataExporter type="csv" target="tablaPagar" fileName="tablaExportada" />
+                        </h:commandLink>
+
+                    </div>
+                </f:facet>
+                <f:facet name="header">
+                    Tabla de Pago
+                </f:facet>
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="N° Documento">
+                    <h:outputText value="#{documento.docNumero}" />
+                </p:column>
+                <p:column headerText="Tipo Documento">
+                    <h:outputText value="#{documento.docTdocId.tdocNombre}" />
+                </p:column>
+                <p:column headerText="Proveedor">
+                    <h:outputText value="#{documento.docProvId.provRazonSocial}" />
+                </p:column>
+                <p:column headerText="Tipo Proveedor">
+                    <h:outputText value="#{documento.docProvId.provTiproId.tiproNombre}" />
+                </p:column>
+                <p:column headerText="Fecha Ingreso">
+                    <h:outputText value="#{documento.docFechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Estado Documento">
+                    <h:outputText value="#{documento.docEdocId.edocNombre}" />
+                </p:column> 
+                <p:column headerText="Nombre Ingreso">
+                    <h:outputText value="#{documento.docUsuIngresa.usuPerId.perNombre}" />
+                </p:column>
+                <p:column headerText="Nombre Edicion">
+                    <h:outputText value="#{documento.docUsuModifica.usuPerId.perNombre}" />
+                </p:column>  
+                <f:facet name="footer">
+                    <p:commandButton process="tablaPagar" update=":formPago:msgs :formPago:tablaPagar"  icon="ui-icon-dollar" action="#{pagarController.grabarPago}" value="Pagar">
+                        <p:confirm header="Confirmacion" message="Esta seguro de generar el pago?" icon="ui-icon-alert" />
+                    </p:commandButton>
+                </f:facet>
+            </p:dataTable>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

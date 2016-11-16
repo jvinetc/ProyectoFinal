@@ -130,7 +130,7 @@
                             <p:selectOneRadio id="medioPago" value="#{pproDocumento.docTdocId}" converter="tipoDocConverted">
                                 <f:selectItems value="#{tipoDocumentoController.listaTipo}" var="tipo"
                                                itemValue="#{tipo}" itemLabel="#{tipo.tdocNombre}"/>
-                                <p:ajax update="panel" listener="#{tipoDocumentoController.seleccion}"/>
+                                <p:ajax update=":formProveedor:panel" listener="#{tipoDocumentoController.seleccion}"/>
                             </p:selectOneRadio>
                         </p:column>
                     </p:row>
@@ -149,14 +149,14 @@
 
                                 <p:column>
                                     <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
-                                    <p:inputText id="nDoc" value="#{pproDocumento.docNumero}">
+                                    <p:inputText id="nDoc" value="#{pproDocumento.docNumero}" required="true" requiredMessage="El campo no puede estar vacio">
                                         <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
                                     </p:inputText>
                                 </p:column>
                                 <p:column>
                                     <p:outputLabel for="formaPago" value="Forma de Pago:"/>
                                     <p:selectOneMenu value="#{pproDocumento.docFormPagId}" id="formaPago"
-                                                     converter="formaPagoConverter">
+                                                     converter="formaPagoConverter" required="true" requiredMessage="El campo no puede estar vacio">
                                         <f:selectItem itemValue="#{null}" itemLabel="Seleccione"/>
                                         <f:selectItems value="#{formaPagoController.listaFormaPago}"
                                                        var="formaPago" itemLabel="#{formaPago.fpagNombre}"
@@ -169,50 +169,22 @@
                                                 required="true" requiredMessage="El campo no puede estar vacio" pattern="dd/MM/yyyy"/>
                                 </p:column>
                                 <h:panelGrid style="width: 50%" columns="2">
-                                    <p:outputLabel for="pdfFactura" value="Pdf de Factura"/>
-                                    <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfFactura" value="#{documentoController.pdfFactura}" 
-                                                   update="msgs" sizeLimit="1000000" skinSimple="true">
+                                    <p:outputLabel for="pdfFactura1" value="Pdf de Factura"/>
+                                    <p:fileUpload  mode="simple" id="pdfFactura1" value="#{documentoController.pdfFactura}" 
+                                                   update="msgs" skinSimple="true"  required="true" requiredMessage="El campo no puede estar vacio">
                                         <f:validator validatorId="validadorArchivo"/>
                                     </p:fileUpload>
 
-
-                                    <c:choose>
-                                        <c:when test="${pproDocumento.docProvId.provTiproId.tiproId ==1}">
-
-                                            <p:outputLabel for="pdfOrdenCompra" value="Pdf de O/C"/>
-                                            <p:fileUpload mode="simple" dragDropSupport="true" id="pdfOrdenCompra" value="#{documentoController.pdfOc}" 
-                                                          update="msgs" sizeLimit="1000000" skinSimple="true">
-                                                <f:validator validatorId="validadorArchivo"/>
-                                            </p:fileUpload>
-                                            <p:outputLabel for="pdfRecepcion" value="Pdf de Recepcion"/>
-                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfRecepcion" value="#{documentoController.pdfRecepcion}" 
-                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
-                                                <f:validator validatorId="validadorArchivo"/>
-                                            </p:fileUpload>
-                                        </c:when>
-                                        <c:when test="${pproDocumento.docProvId.provTiproId.tiproId==2}">
-                                            <p:outputLabel for="pdfContrato" value="Pdf Contrato"/>
-                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfContrato" value="#{documentoController.pdfContrato}" 
-                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
-                                                <f:validator validatorId="validadorArchivo"/>
-                                            </p:fileUpload>
-                                            <p:outputLabel for="pdfRealizado" value="Pdf Conformidad"/>
-                                            <p:fileUpload  mode="simple" dragDropSupport="true" id="pdfRealizado" value="#{documentoController.pdfRealizado}" 
-                                                           update="msgs" sizeLimit="1000000" skinSimple="true">
-                                                <f:validator validatorId="validadorArchivo"/>
-                                            </p:fileUpload>
-                                        </c:when>
-                                    </c:choose>                            
                                 </h:panelGrid>
                                 <h:panelGrid style="width: 50%" columns="2">
-                                    <p:outputLabel for="neto" value="Neto:"/>
-                                    <p:inputNumber id="neto" value="#{pproFactura.facNeto}" >
-                                        <p:ajax listener="#{documentoController.calculaIva}" update="iva monto"/>
+                                    <p:outputLabel for="neto1" value="Neto:"/>
+                                    <p:inputNumber id="neto1" value="#{pproFactura.facNeto}" required="true" requiredMessage="El campo no puede estar vacio" >
+                                        <p:ajax listener="#{documentoController.calculaIva}" update=":formProveedor:iva1 :formProveedor:monto1"/>
                                     </p:inputNumber>
-                                    <p:outputLabel for="iva" value="19% IVA:"/>
-                                    <p:inputNumber id="iva" value="#{pproFactura.facIva}"  readonly="true"/>
-                                    <p:outputLabel for="monto" value="Total factura:"/>
-                                    <p:inputNumber id="monto" value="#{pproFactura.facMonto}" readonly="true"/>
+                                    <p:outputLabel for="iva1" value="19% IVA:"/>
+                                    <p:inputNumber id="iva1" value="#{pproFactura.facIva}"  readonly="true"/>
+                                    <p:outputLabel for="monto1" value="Total factura:"/>
+                                    <p:inputNumber id="monto1" value="#{pproFactura.facMonto}" readonly="true"/>
                                 </h:panelGrid>
                             </c:when>
                             <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Boleta'}">
@@ -228,7 +200,9 @@
                             </c:when>
                             <c:otherwise>
                                 <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
-                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"/>
+                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}">
+                                     <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                </p:inputText>
                                 <p:outputLabel for="pdfNotaCredito" value="Pdf Nota Credito "/>
                                 <p:fileUpload mode="simple" id="pdfNotaCredito" value="#{documentoController.pdfNotaCredito}" 
                                               update="msgs" sizeLimit="1000000" skinSimple="true">
@@ -236,12 +210,8 @@
                                 </p:fileUpload>
                             </c:otherwise>
                         </c:choose>
-                    </h:panelGrid>                    
-
+                    </h:panelGrid>
                 </p:panel>
-
-
-
                 <p:panelGrid style="width: 100%">
                     <f:facet name="footer">
                         <p:row>
@@ -378,12 +348,12 @@
                             <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Factura'}">
 
                                 <p:column>
-                                <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
-                                <p:inputText id="nDoc" value="#{pproDocumento.docNumero}" required="true" requiredMessage="El campo no puede estar vacio">
-                                    <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
-                                </p:inputText>
+                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                    <p:inputText id="nDoc" value="#{pproDocumento.docNumero}" required="true" requiredMessage="El campo no puede estar vacio">
+                                        <p:ajax listener="#{documentoController.validaExistencia}" update="msgs"/>
+                                    </p:inputText>
                                 </p:column>
-                                 <p:column>
+                                <p:column>
                                     <p:outputLabel for="formaPagoNuevo" value="Forma de Pago:"/>
                                     <p:selectOneMenu value="#{pproDocumento.docFormPagId}" id="formaPagoNuevo"
                                                      converter="formaPagoConverter" required="true" requiredMessage="El campo no puede estar vacio">
@@ -404,7 +374,7 @@
                                                    update="msgs" skinSimple="true"  required="true" requiredMessage="El campo no puede estar vacio">
                                         <f:validator validatorId="validadorArchivo"/>
                                     </p:fileUpload>
-                         
+
                                 </h:panelGrid>
                                 <h:panelGrid style="width: 50%" columns="2">
                                     <p:outputLabel for="neto" value="Neto:"/>

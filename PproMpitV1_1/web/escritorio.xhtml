@@ -11,50 +11,104 @@
 
         <ui:composition template="./navegacion.xhtml">
 
-            <ui:define name="content">
-                <p:dataTable value="#{documentoController.listaDocumentos}" var="documento"
-                             paginator="true" 
-                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             rowsPerPageTemplate="5,10,15" rows="5">
-                    <f:facet name="header">
-                        <h:outputText value="Listado de Documentos Ingresados"/>
-                    </f:facet>
-                    <p:column headerText="N° Documento">
-                        <h:outputText value="#{documento.docNumero}" />
-                    </p:column>
-                    <p:column headerText="Tipo Documento">
-                        <h:outputText value="#{documento.docTdocId.tdocNombre}"/>
-                    </p:column>
-                    <p:column headerText="Proveedor">
-                        <h:outputText value="#{documento.docProvId.provRazonSocial}"/>
-                    </p:column>
-                    <p:column headerText="Tipo de proveedor">
-                        <h:outputText value="#{documento.docProvId.provTiproId.tiproNombre}"/>
-                    </p:column>
-                    <p:column headerText="Fecha Ingreso">
-                        <h:outputText value="#{documento.docFechaIngreso}">
-                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Estado Documento">
-                        <h:outputText value="#{documento.docEdocId.edocNombre}"/>
-                    </p:column>
-                    <c:choose>
-                        <c:when test="${pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}'}">
+            <ui:define name="head">
 
-                            <p:column headerText="Accion">
-                                <h:form>
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="formEscritorio">
+                    <p:growl id="msgs" showDetail="true"/>
+                    <p:dataTable value="#{pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}' || pproUsuario.pproRelUsuarioPerfilCollection=='{[1]}'? documentoController.listaIngresado :
+                                          (pproUsuario.pproRelUsuarioPerfilCollection=='{[4]}'? documentoController.listaAutorizados:null)}" 
+                                 var="documento"
+                                 paginator="true" id="tablaEscritorio"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                 rowsPerPageTemplate="5,10,15" rows="5" 
+                                 selection="#{gestionController.listaSeleccion}" rowKey="#{documento}"
+                                 rowStyleClass="#{documento.docFechaIngreso.month eq documentoController.now.month ? 
+                                                  ((documento.docFechaIngreso.date +3) le documentoController.now.date ? 'middle': 'new'):'old'}">
+                        <f:facet name="{Exporters}">
+                            <div style="float:right">
+                                <h:commandLink>
+                                    <p:graphicImage name="demo/images/excel.png" width="24"/>
+                                    <p:dataExporter type="xls" target="tablaEscritorio" fileName="tablaEscritorio" 
+                                                    />
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage name="demo/images/pdf.png" width="24"/>
+                                    <p:dataExporter type="pdf" target="tablaEscritorio" fileName="tablaEscritorio"
+                                                    preProcessor="#{exportController.preProcessPDF}" 
+                                                    postProcessor="#{exportController.postProcessPDF}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage name="demo/images/csv.png" width="24"/>
+                                    <p:dataExporter type="csv" target="tablaEscritorio" fileName="tablaEscritorio" />
+                                </h:commandLink>
+
+                            </div>
+                        </f:facet>
+
+                        <f:facet name="header">
+                            <h:outputText value="Listado de Documentos Ingresados"/>
+                        </f:facet>
+
+                        <p:column selectionMode="multiple" rendered="#{pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}'}" 
+                                  style="width:16px;text-align:center"/>
+                        <p:column headerText="N° Documento">
+                            <h:outputText value="#{documento.docNumero}" />
+                        </p:column>
+                        <p:column headerText="Tipo Documento">
+                            <h:outputText value="#{documento.docTdocId.tdocNombre}"/>
+                        </p:column>
+                        <p:column headerText="Proveedor">
+                            <h:outputText value="#{documento.docProvId.provRazonSocial}"/>
+                        </p:column>
+                        <p:column headerText="Tipo de proveedor">
+                            <h:outputText value="#{documento.docProvId.provTiproId.tiproNombre}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso">
+                            <h:outputText value="#{documento.docFechaIngreso}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Estado Documento">
+                            <h:outputText value="#{documento.docEdocId.edocNombre}"/>
+                        </p:column>
+                        <c:choose>
+                            <c:when test="${pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}'}">
+
+                                <p:column headerText="Accion" exportable="false">
+
                                     <p:commandLink value="Editar" action="gestion.xhtml" ajax="false">
                                         <f:setPropertyActionListener value="#{documento}" target="#{pproDocumento}" />
                                     </p:commandLink>
-                                </h:form>
-                            </p:column>
 
-                        </c:when>
-                    </c:choose>
+                                </p:column>
 
 
-                </p:dataTable>
+                                <f:facet name="footer">
+                                    <p:commandButton process="tablaEscritorio"  
+                                                     update="@form" ajax="true"  
+                                                     icon="ui-icon-dollar" action="#{gestionController.autorizarDocumento}" 
+                                                     value="Autorizar">
+                                        <p:confirm header="Confirmacion" message="Esta Seguro de Autorizar los documentos?" icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                    <p:commandButton process="tablaEscritorio" 
+                                                     update="@form"  ajax="true"
+                                                     icon="ui-icon-dollar" action="#{gestionController.rechazarDocumento}" 
+                                                     value="Rechazar">
+                                        <p:confirm header="Confirmacion" message="Esta seguro de rechazar los documentos?" icon="ui-icon-alert" />
+                                    </p:commandButton>
+                                </f:facet>
+                            </c:when>
+                        </c:choose>
+                    </p:dataTable>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </h:form>
             </ui:define>
 
         </ui:composition>

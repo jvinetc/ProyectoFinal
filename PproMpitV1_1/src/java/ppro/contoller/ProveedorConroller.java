@@ -5,6 +5,7 @@
  */
 package ppro.contoller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -26,7 +27,7 @@ import ppro.servicio.ProveedorServicio;
  */
 @ManagedBean
 @ViewScoped
-public class ProveedorConroller {
+public class ProveedorConroller implements Serializable{
 
     @EJB
     private PersonaServicio personaServicio;
