@@ -66,4 +66,13 @@ public class ProveedorServicio {
         }
         return false;
     }
+    
+    public boolean actualizarProv (PproProveedor prov){
+        try {
+            em.merge(prov);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

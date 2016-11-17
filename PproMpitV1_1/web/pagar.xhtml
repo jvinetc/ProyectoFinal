@@ -68,7 +68,8 @@
                     <h:outputText value="#{documento.docUsuModifica.usuPerId.perNombre}" />
                 </p:column>  
                 <f:facet name="footer">
-                    <p:commandButton process="tablaPagar" update=":formPago:msgs :formPago:tablaPagar"  icon="ui-icon-dollar" action="#{pagarController.grabarPago}" value="Pagar">
+                    <p:commandButton process="tablaPagar" update=":formPago:msgs :formPago:tablaPagar"  
+                                     ajax="true" icon="ui-icon-dollar" action="#{pagarController.grabarPago}" value="Pagar">
                         <p:confirm header="Confirmacion" message="Esta seguro de generar el pago?" icon="ui-icon-alert" />
                     </p:commandButton>
                 </f:facet>

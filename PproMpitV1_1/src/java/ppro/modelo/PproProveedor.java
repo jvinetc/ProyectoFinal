@@ -23,6 +23,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -47,6 +48,15 @@ import javax.xml.bind.annotation.XmlTransient;
 public class PproProveedor implements Serializable {
 
     @Size(max = 255)
+    @Column(name = "prov_email")
+    @Pattern(regexp="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+    private String provEmail;
+
+    @JoinColumn(name = "prov_ent_financiera", referencedColumnName = "ent_fin_id")
+    @ManyToOne
+    private PproEntidadFinanciera provEntFinanciera;
+
+    @Size(max = 255)
     @Column(name = "prov_n_cuenta")
     private String provNCuenta;
 
@@ -63,8 +73,6 @@ public class PproProveedor implements Serializable {
     private Integer provEstado;
     @OneToMany(mappedBy = "docProvId")
     private Collection<PproDocumento> pproDocumentoCollection;
-    @OneToMany(mappedBy = "repProvId")
-    private Collection<PproRelEntidadProveedor> pproRelEntidadProveedorCollection;
     @JoinColumn(name = "prov_per_id", referencedColumnName = "per_id")
     @ManyToOne
     private PproPersona provPerId;
@@ -113,14 +121,6 @@ public class PproProveedor implements Serializable {
         this.pproDocumentoCollection = pproDocumentoCollection;
     }
 
-    @XmlTransient
-    public Collection<PproRelEntidadProveedor> getPproRelEntidadProveedorCollection() {
-        return pproRelEntidadProveedorCollection;
-    }
-
-    public void setPproRelEntidadProveedorCollection(Collection<PproRelEntidadProveedor> pproRelEntidadProveedorCollection) {
-        this.pproRelEntidadProveedorCollection = pproRelEntidadProveedorCollection;
-    }
 
     public PproPersona getProvPerId() {
         return provPerId;
@@ -169,6 +169,22 @@ public class PproProveedor implements Serializable {
 
     public void setProvNCuenta(String provNCuenta) {
         this.provNCuenta = provNCuenta;
+    }
+
+    public PproEntidadFinanciera getProvEntFinanciera() {
+        return provEntFinanciera;
+    }
+
+    public void setProvEntFinanciera(PproEntidadFinanciera provEntFinanciera) {
+        this.provEntFinanciera = provEntFinanciera;
+    }
+
+    public String getProvEmail() {
+        return provEmail;
+    }
+
+    public void setProvEmail(String provEmail) {
+        this.provEmail = provEmail;
     }
     
 }

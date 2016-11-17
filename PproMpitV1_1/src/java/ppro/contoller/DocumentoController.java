@@ -234,16 +234,15 @@ public class DocumentoController implements Serializable {
     }
 
     public void grabar() throws Exception {
+        
+        proveedorServicio.actualizarProv(pproProveedor);        
+        pproDocumento.setDocProvId(pproProveedor);
         pproDocumento.setDocUsuIngresa(pproUsuario);
         pproEstadoDocumento = estadoDocServicio.buscarEstado(1);
         pproDocumento.setDocEdocId(pproEstadoDocumento);
         Date now = new Date(System.currentTimeMillis());
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMddHHmmss");
-        //SimpleDateFormat fechaSql= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //java.sql.Date fechaSql = new java.sql.Date(0);
         String fechaActual = date.format(now);
-        //String fechaGuarda= fechaSql.format(now);
-        //pproDocumento.setDocFechaIngreso(fechaSql);
         switch (pproDocumento.getDocTdocId().getTdocNombre()) {
             case "Factura":
                 if (getPdfFactura() != null) {
@@ -261,82 +260,7 @@ public class DocumentoController implements Serializable {
                         FacesContext.getCurrentInstance().
                                 addMessage(null, new FacesMessage("Registros no guardados"));
                     }
-                    if (pproDocumento.getDocProvId().getProvTiproId().getTiproId() == 1) {
-                        if (getPdfOc() != null) {
-                            String nombreOc = getPdfOc().getFileName();
-                            subeArchivo(nombreOc, getPdfOc().getInputstream(), destinoAnexo, fechaActual);
-                            pproAnexoDocumento.setAneTanId(tipoAnexoServicio.
-                                    porTipoProv(pproDocumento.getDocProvId(), "Orden de Compra"));
-                            pproAnexoDocumento.setAneRuta(destino + destinoAnexo + fechaActual + "@" + nombreOc);
-                            pproAnexoDocumento.setAneDocId(pproDocumento);
-                            pproAnexoDocumento.setAneNombre(nombreOc);
-                            if (anexoServicio.grabarAnexo(pproAnexoDocumento)) {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros guardados"));
-                            } else {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros no guardados"));
-                            }
-                            FacesContext.getCurrentInstance().
-                                    addMessage(null, new FacesMessage("Archivo Subido " + nombreOc));
-                        }
-                        if (getPdfRecepcion() != null) {
-                            String nombreRecepcion = getPdfRecepcion().getFileName();
-                            subeArchivo(nombreRecepcion, getPdfRecepcion().getInputstream(), destinoAnexo, fechaActual);
-                            FacesContext.getCurrentInstance().
-                                    addMessage(null, new FacesMessage("Archivo Subido " + nombreRecepcion));
-                            pproAnexoDocumento.setAneTanId(tipoAnexoServicio.
-                                    porTipoProv(pproDocumento.getDocProvId(), "Recepcion Conforme"));
-                            pproAnexoDocumento.setAneRuta(destino + destinoAnexo + fechaActual + "@" + nombreRecepcion);
-                            pproAnexoDocumento.setAneNombre(nombreRecepcion);
-                            pproAnexoDocumento.setAneDocId(pproDocumento);
-                            if (anexoServicio.grabarAnexo(pproAnexoDocumento)) {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros guardados"));
-                            } else {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros no guardados"));
-                            }
-                        }
-                    } else if (pproDocumento.getDocProvId().getProvTiproId().getTiproId() == 2) {
-                        if (getPdfContrato() != null) {
-                            String nombreContrato = getPdfContrato().getFileName();
-                            subeArchivo(nombreContrato, getPdfContrato().getInputstream(), destinoAnexo, fechaActual);
-                            FacesContext.getCurrentInstance().
-                                    addMessage(null, new FacesMessage("Archivo Subido " + nombreContrato));
-                            pproAnexoDocumento.setAneTanId(tipoAnexoServicio.
-                                    porTipoProv(pproDocumento.getDocProvId(), "Contrato"));
-                            pproAnexoDocumento.setAneRuta(destino + destinoAnexo + fechaActual + "@" + nombreContrato);
-                            pproAnexoDocumento.setAneDocId(pproDocumento);
-                            pproAnexoDocumento.setAneNombre(nombreContrato);
-                            if (anexoServicio.grabarAnexo(pproAnexoDocumento)) {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros guardados"));
-                            } else {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros no guardados"));
-                            }
-
-                        }
-                        if (getPdfRealizado() != null) {
-                            String nombreRealizado = getPdfRealizado().getFileName();
-                            subeArchivo(nombreRealizado, getPdfRealizado().getInputstream(), destinoAnexo, fechaActual);
-                            FacesContext.getCurrentInstance().
-                                    addMessage(null, new FacesMessage("Archivo Subido " + nombreRealizado));
-                            pproAnexoDocumento.setAneTanId(tipoAnexoServicio.
-                                    porTipoProv(pproDocumento.getDocProvId(), "Conformidad"));
-                            pproAnexoDocumento.setAneRuta(destino + destinoAnexo + fechaActual + "@" + nombreRealizado);
-                            pproAnexoDocumento.setAneNombre(nombreRealizado);
-                            pproAnexoDocumento.setAneDocId(pproDocumento);
-                            if (anexoServicio.grabarAnexo(pproAnexoDocumento)) {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros guardados"));
-                            } else {
-                                FacesContext.getCurrentInstance().
-                                        addMessage(null, new FacesMessage("Registros no guardados"));
-                            }
-                        }
-                    }
+                    
                     pproFactura.setFacDocId(pproDocumento);
                     if (facturaServicio.grabarFactura(pproFactura)) {
                         FacesContext.getCurrentInstance().
@@ -396,7 +320,7 @@ public class DocumentoController implements Serializable {
                 }
                 break;
         }
-        RequestContext.getCurrentInstance().reset("formProveedor");
+        RequestContext.getCurrentInstance().reset(":formProv");
     }
 
     public void subeArchivo(String nombreArchivo, InputStream in, String carpeta, String fechaActual) {
@@ -449,15 +373,7 @@ public class DocumentoController implements Serializable {
         RequestContext.getCurrentInstance().update("updateForm");
     }
 
-    public void calculaIva() {
-        double iva = 0.19;
-        double neto = (double) pproFactura.getFacNeto();
-        double valorIva = neto * iva;
-        double total = pproFactura.getFacNeto() + valorIva;
-        pproFactura.setFacIva((int) valorIva);
-        pproFactura.setFacMonto((int) total);
-        //RequestContext.getCurrentInstance().update("formProveedorNuevo:iva formProveedorNuevo:monto");
-    }
+    
 
     public void validTipo(File file) {
         String fileType;
@@ -610,7 +526,7 @@ public class DocumentoController implements Serializable {
                 }
                 break;
         }
-        RequestContext.getCurrentInstance().reset("formProveedorNuevo");
+        RequestContext.getCurrentInstance().reset(":formProv");
     }
 
     public PproPersona getPproPersona() {

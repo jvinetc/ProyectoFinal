@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +48,7 @@ import ppro.servicio.EstadoDocServicio;
  */
 @ManagedBean
 @ViewScoped
-public class GestionController {
+public class GestionController implements Serializable{
 
     @EJB
     private DocumentoServicio documentoServicio;

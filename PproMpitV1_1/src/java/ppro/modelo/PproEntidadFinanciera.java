@@ -8,6 +8,7 @@ package ppro.modelo;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +37,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproEntidadFinanciera.findByEntFinCodigo", query = "SELECT p FROM PproEntidadFinanciera p WHERE p.entFinCodigo = :entFinCodigo"),
     @NamedQuery(name = "PproEntidadFinanciera.findByEntFinEstado", query = "SELECT p FROM PproEntidadFinanciera p WHERE p.entFinEstado = :entFinEstado")})
 @ManagedBean
+@ViewScoped
 public class PproEntidadFinanciera implements Serializable {
+
+    @OneToMany(mappedBy = "provEntFinanciera")
+    private Collection<PproProveedor> pproProveedorCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,8 +57,6 @@ public class PproEntidadFinanciera implements Serializable {
     private String entFinCodigo;
     @Column(name = "ent_fin_estado")
     private Integer entFinEstado;
-    @OneToMany(mappedBy = "repEntFinId")
-    private Collection<PproRelEntidadProveedor> pproRelEntidadProveedorCollection;
 
     public PproEntidadFinanciera() {
     }
@@ -94,14 +97,6 @@ public class PproEntidadFinanciera implements Serializable {
         this.entFinEstado = entFinEstado;
     }
 
-    @XmlTransient
-    public Collection<PproRelEntidadProveedor> getPproRelEntidadProveedorCollection() {
-        return pproRelEntidadProveedorCollection;
-    }
-
-    public void setPproRelEntidadProveedorCollection(Collection<PproRelEntidadProveedor> pproRelEntidadProveedorCollection) {
-        this.pproRelEntidadProveedorCollection = pproRelEntidadProveedorCollection;
-    }
 
     @Override
     public int hashCode() {
@@ -126,6 +121,15 @@ public class PproEntidadFinanciera implements Serializable {
     @Override
     public String toString() {
         return "ppro.modelo.PproEntidadFinanciera[ entFinId=" + entFinId + " ]";
+    }
+
+    @XmlTransient
+    public Collection<PproProveedor> getPproProveedorCollection() {
+        return pproProveedorCollection;
+    }
+
+    public void setPproProveedorCollection(Collection<PproProveedor> pproProveedorCollection) {
+        this.pproProveedorCollection = pproProveedorCollection;
     }
     
 }

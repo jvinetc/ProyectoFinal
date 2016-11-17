@@ -118,8 +118,7 @@ public class PagarController {
                     razonSoc = completaCampo(razonSoc.length(), 45, razonSoc);
                     String direccion = doc.getDocProvId().getProvPerId().getPerDireccion();
                     direccion = completaCampo(direccion.length(), 39, direccion);
-                    String codigoBanco = doc.getDocProvId().getPproRelEntidadProveedorCollection().iterator()
-                            .next().getRepEntFinId().getEntFinCodigo();
+                    String codigoBanco = doc.getDocProvId().getProvEntFinanciera().getEntFinNombre();
                     String nCuenta = doc.getDocProvId().getProvNCuenta();
                     nCuenta = agregaCeros(nCuenta.length(), 20, nCuenta);
                     String tipoDoc = doc.getDocTdocId().getTdocNombre();

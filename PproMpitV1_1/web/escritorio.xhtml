@@ -19,7 +19,7 @@
                     <p:growl id="msgs" showDetail="true"/>
                     <p:dataTable value="#{pproUsuario.pproRelUsuarioPerfilCollection=='{[3]}' || pproUsuario.pproRelUsuarioPerfilCollection=='{[1]}'? documentoController.listaIngresado :
                                           (pproUsuario.pproRelUsuarioPerfilCollection=='{[4]}'? documentoController.listaAutorizados:null)}" 
-                                 var="documento"
+                                 var="documento" reflow="true"
                                  paginator="true" id="tablaEscritorio"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                  rowsPerPageTemplate="5,10,15" rows="5" 
@@ -88,14 +88,14 @@
 
 
                                 <f:facet name="footer">
-                                    <p:commandButton process="tablaEscritorio"  
-                                                     update="@form" ajax="true"  
+                                    <p:commandButton process="@all"  
+                                                     update=":formEscritorio" ajax="true"  
                                                      icon="ui-icon-dollar" action="#{gestionController.autorizarDocumento}" 
                                                      value="Autorizar">
                                         <p:confirm header="Confirmacion" message="Esta Seguro de Autorizar los documentos?" icon="ui-icon-alert" />
                                     </p:commandButton>
-                                    <p:commandButton process="tablaEscritorio" 
-                                                     update="@form"  ajax="true"
+                                    <p:commandButton process="@all" 
+                                                     update=":formEscritorio"  ajax="true"
                                                      icon="ui-icon-dollar" action="#{gestionController.rechazarDocumento}" 
                                                      value="Rechazar">
                                         <p:confirm header="Confirmacion" message="Esta seguro de rechazar los documentos?" icon="ui-icon-alert" />
