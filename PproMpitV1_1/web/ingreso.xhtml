@@ -94,7 +94,7 @@
                             <p:inputText value="#{pproProveedor.provEmail}" required="true" 
                                          requiredMessage="Ingrese el email."
                                          validatorMessage="Formato invalido">
-                                
+
                             </p:inputText>
 
                             <h:outputText value="Telefono: " />
@@ -124,20 +124,20 @@
                         <p:messages />
                         <h:panelGrid columns="2" id="panel" columnClasses="label, value">
                             <h:outputText value="Tipo Documento:" />
-                            <p:selectOneRadio id="medioPago" value="#{pproDocumento.docTdocId}" converter="tipoDocConverted" 
+                            <p:selectOneRadio id="tipoDocumento" value="#{pproTipoDocumento}" converter="tipoDocConverted" 
                                               required="true" requiredMessage="El campo no puede estar vacio">
                                 <f:selectItems value="#{tipoDocumentoController.listaTipo}" var="tipoNuevo"
                                                itemValue="#{tipoNuevo}" itemLabel="#{tipoNuevo.tdocNombre}"/>
                                 <p:ajax update="panel" listener="#{tipoDocumentoController.seleccion}"/>
                             </p:selectOneRadio> 
                             <c:choose>
-                                <c:when test="${pproDocumento.docTdocId.tdocNombre == null}">
+                                <c:when test="${pproTipoDocumento.tdocNombre == null}">
                                     <p:outputLabel value="Seleccione medio de pago" />
                                 </c:when>
-                                <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Factura'}">
+                                <c:when test="${pproTipoDocumento.tdocNombre == 'Factura'}">
 
 
-                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproTipoDocumento.tdocNombre}:" />                        
                                     <p:inputText id="nDoc" value="#{pproDocumento.docNumero}" required="true" requiredMessage="El campo no puede estar vacio">
                                         <p:ajax listener="#{documentoController.validaExistencia}" update="growl"/>
                                     </p:inputText>
@@ -164,7 +164,7 @@
 
                                     <p:outputLabel for="neto" value="Neto:"/>
                                     <p:inputNumber id="neto" value="#{pproFactura.facNeto}" required="true" requiredMessage="El campo no puede estar vacio" >
-                                        <p:ajax listener="#{ingresarController.calculaIva()}" update="formProv:iva formProv:monto"/>
+                                        <p:ajax listener="#{ingresarController.calculaIva}" update="iva monto"/>
                                     </p:inputNumber>
                                     <p:outputLabel for="iva" value="19% IVA:"/>
                                     <p:inputNumber id="iva" value="#{pproFactura.facIva}"  readonly="true"/>
@@ -172,8 +172,8 @@
                                     <p:inputNumber id="monto" value="#{pproFactura.facMonto}" readonly="true"/>
 
                                 </c:when>
-                                <c:when test="${pproDocumento.docTdocId.tdocNombre == 'Boleta'}">
-                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                <c:when test="${pproTipoDocumento.tdocNombre == 'Boleta'}">
+                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproTipoDocumento.tdocNombre}:" />                        
                                     <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"  required="true" requiredMessage="El campo no puede estar vacio">
                                         <p:ajax listener="#{documentoController.validaExistencia}" update="growl"/>
                                     </p:inputText>
@@ -183,7 +183,7 @@
                                                    fileUploadListener="#{documentoController.validTipo(documentoController.pdfBoleta)}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproDocumento.docTdocId.tdocNombre}:" />                        
+                                    <p:outputLabel for="nDoc" value="Ingrese n° de #{pproTipoDocumento.tdocNombre}:" />                        
                                     <p:inputText id="nDoc" value="#{pproDocumento.docNumero}"/>
                                     <p:outputLabel for="pdfNotaCredito" value="Pdf Nota Credito "/>
                                     <p:fileUpload mode="simple" id="pdfNotaCredito" value="#{documentoController.pdfNotaCredito}" 
@@ -194,6 +194,11 @@
                             </c:choose>
 
                         </h:panelGrid>
+                        <p:commandButton value="Guardar" actionListener="#{documentoController.grabar}" 
+                                         update="growl" process="@this" rendered="#{ingresarController.existe}"/>
+                        <p:commandButton value="Guardar" actionListener="#{documentoController.grabarNuevo}" 
+                                         update="growl" process="@this" rendered="#{!ingresarController.existe}"/>
+
                     </p:panel>
                 </p:tab>
 
@@ -234,7 +239,7 @@
 
                                 <h:outputText value="Apellido Materno: " />
                                 <h:outputText value="#{pproProveedor.provPerId.perApeMaterno}" styleClass="outputLabel"/>
-                                
+
                                 <h:outputText value="Archivo: " />
                                 <h:outputText value="#{documentoController.pdfFactura}" styleClass="outputLabel"/>
 
@@ -242,11 +247,11 @@
                                 <h:outputText />
                             </h:panelGrid>
                         </h:panelGrid>
-
                         <p:commandButton value="Guardar" actionListener="#{documentoController.grabar}" 
                                          update="growl" process="@this" rendered="#{ingresarController.existe}"/>
                         <p:commandButton value="Guardar" actionListener="#{documentoController.grabarNuevo}" 
                                          update="growl" process="@this" rendered="#{!ingresarController.existe}"/>
+
                     </p:panel>
                 </p:tab>
             </p:wizard>

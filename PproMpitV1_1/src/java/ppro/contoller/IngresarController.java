@@ -12,8 +12,9 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
-import org.primefaces.context.RequestContext;
+import javax.faces.context.FacesContext;
 import org.primefaces.event.FlowEvent;
 import ppro.modelo.PproEntidadFinanciera;
 import ppro.modelo.PproFactura;
@@ -24,7 +25,7 @@ import ppro.servicio.PproEntidadFinancieraFacade;
  * @author casa
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class IngresarController implements Serializable{
     
     @EJB
@@ -37,6 +38,11 @@ public class IngresarController implements Serializable{
     @ManagedProperty(value = "#{pproEntidadFinanciera}")
     private PproEntidadFinanciera pproEntidadFinanciera;
     
+    private final String pathAbsoluto = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
+    private final String destino = "resources\\tmp";
+    private final String destinoFacura = "\\factura\\";
+    private final String destinoBoleta = "\\boleta\\";
+    private final String destinoNota = "\\notaCredito\\";
     
     @PostConstruct
     public void init(){

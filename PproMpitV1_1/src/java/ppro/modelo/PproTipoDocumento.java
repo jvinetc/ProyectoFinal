@@ -12,6 +12,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproTipoDocumento.findByTdocNombre", query = "SELECT p FROM PproTipoDocumento p WHERE p.tdocNombre = :tdocNombre"),
     @NamedQuery(name = "PproTipoDocumento.findByTdocEstado", query = "SELECT p FROM PproTipoDocumento p WHERE p.tdocEstado = :tdocEstado")})
 @ManagedBean
-@RequestScoped
+@SessionScoped
 public class PproTipoDocumento implements Serializable {
 
     private static final long serialVersionUID = 1L;

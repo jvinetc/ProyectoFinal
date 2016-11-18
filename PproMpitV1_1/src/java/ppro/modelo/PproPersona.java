@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproPersona.findByPerDireccion", query = "SELECT p FROM PproPersona p WHERE p.perDireccion = :perDireccion"),
     @NamedQuery(name = "PproPersona.findByPerTelefono", query = "SELECT p FROM PproPersona p WHERE p.perTelefono = :perTelefono")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproPersona implements Serializable {
 
     @Basic(optional = false)

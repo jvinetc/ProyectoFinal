@@ -24,20 +24,20 @@ import ppro.modelo.PproDocumento;
 import ppro.modelo.PproEstadoDocumento;
 import ppro.modelo.PproFactura;
 import ppro.modelo.PproUsuario;
-import ppro.servicio.AnexoServicio;
 import ppro.servicio.DocumentoServicio;
 import ppro.servicio.EstadoDocServicio;
 import ppro.servicio.FacturaServicio;
-import ppro.servicio.TipoAnexoServicio;
-import ppro.servicio.TipoDocumentoServicio;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 
 import javax.faces.context.FacesContext;
 import ppro.modelo.PproPersona;
 import ppro.modelo.PproProveedor;
+import ppro.modelo.PproTipoDocumento;
 import ppro.modelo.PproTipoPersona;
 import ppro.servicio.PersonaServicio;
 import ppro.servicio.PproTipoPersonaFacade;
@@ -48,7 +48,7 @@ import ppro.servicio.ProveedorServicio;
  * @author casa
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class DocumentoController implements Serializable {
 
     @EJB
@@ -67,16 +67,7 @@ public class DocumentoController implements Serializable {
     private EstadoDocServicio estadoDocServicio;
 
     @EJB
-    private AnexoServicio anexoServicio;
-
-    @EJB
     private FacturaServicio facturaServicio;
-
-    @EJB
-    private TipoDocumentoServicio tipoDocumentoServicio;
-
-    @EJB
-    private TipoAnexoServicio tipoAnexoServicio;
 
     private final String pathAbsoluto = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
     private final String destino = "resources\\tmp";
@@ -96,7 +87,18 @@ public class DocumentoController implements Serializable {
     private PproPersona pproPersona;
     @ManagedProperty(value = "#{pproProveedor}")
     private PproProveedor pproProveedor;
+    @ManagedProperty(value="#{pproTipoDocumento}")
+    private PproTipoDocumento pproTipoDocumento;
 
+    public PproTipoDocumento getPproTipoDocumento() {
+        return pproTipoDocumento;
+    }
+
+    public void setPproTipoDocumento(PproTipoDocumento pproTipoDocumento) {
+        this.pproTipoDocumento = pproTipoDocumento;
+    }
+    
+    
     private Date now = new Date(System.currentTimeMillis());
 
     public Date getNow() {
@@ -235,6 +237,7 @@ public class DocumentoController implements Serializable {
 
     public void grabar() throws Exception {
         
+        pproDocumento.setDocTdocId(pproTipoDocumento);
         proveedorServicio.actualizarProv(pproProveedor);        
         pproDocumento.setDocProvId(pproProveedor);
         pproDocumento.setDocUsuIngresa(pproUsuario);
@@ -320,6 +323,9 @@ public class DocumentoController implements Serializable {
                 }
                 break;
         }
+        PproUsuario usu= pproUsuario;
+                FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pproUsuario",usu);
         RequestContext.getCurrentInstance().reset(":formProv");
     }
 
@@ -444,6 +450,7 @@ public class DocumentoController implements Serializable {
         pproDocumento.setDocUsuIngresa(pproUsuario);
         pproEstadoDocumento = estadoDocServicio.buscarEstado(1);
         pproDocumento.setDocEdocId(pproEstadoDocumento);
+        pproDocumento.setDocTdocId(pproTipoDocumento);
         Date now = new Date(System.currentTimeMillis());
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMddHHmmss");
         //java.sql.Date fechaSql = new java.sql.Date(0);

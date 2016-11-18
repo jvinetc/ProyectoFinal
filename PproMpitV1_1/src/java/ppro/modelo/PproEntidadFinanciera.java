@@ -8,6 +8,7 @@ package ppro.modelo;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -37,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproEntidadFinanciera.findByEntFinCodigo", query = "SELECT p FROM PproEntidadFinanciera p WHERE p.entFinCodigo = :entFinCodigo"),
     @NamedQuery(name = "PproEntidadFinanciera.findByEntFinEstado", query = "SELECT p FROM PproEntidadFinanciera p WHERE p.entFinEstado = :entFinEstado")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproEntidadFinanciera implements Serializable {
 
     @OneToMany(mappedBy = "provEntFinanciera")

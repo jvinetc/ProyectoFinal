@@ -10,6 +10,7 @@ import java.util.Collection;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -44,7 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproProveedor.findByRutParecido", query = "SELECT p FROM PproProveedor p INNER JOIN p.provPerId pper WHERE pper.perRut LIKE :rutProv"),
     @NamedQuery(name = "PproProveedor.findByRutCompleto", query = "SELECT p FROM PproProveedor p INNER JOIN p.provPerId pper WHERE pper.perRutComp = :rutCompleto")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproProveedor implements Serializable {
 
     @Size(max = 255)

@@ -8,6 +8,7 @@ package ppro.modelo;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PproEstadoDocumento.findByEdocId", query = "SELECT p FROM PproEstadoDocumento p WHERE p.edocId = :edocId"),
     @NamedQuery(name = "PproEstadoDocumento.findByEdocNombre", query = "SELECT p FROM PproEstadoDocumento p WHERE p.edocNombre = :edocNombre")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproEstadoDocumento implements Serializable {
 
     private static final long serialVersionUID = 1L;

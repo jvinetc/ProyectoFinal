@@ -38,21 +38,13 @@ public class TipoDocConverted implements Converter{
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         for(PproTipoDocumento tipoDoc:getListaTipo()){
             if(tipoDoc.getTdocId().equals(Integer.parseInt(value))){
+                
                 return tipoDoc;
             }
         }
-       // if(value!=null && value.trim().length()>0){
-          //  try {
-                //TipoDocumentoController tipoDoc= (TipoDocumentoController) context.getExternalContext().getApplicationMap().get("tipoDocumentoController");
-                //return tipoDoc.getListaTipo().get(Integer.parseInt(value)-1);
-               // PproTipoDocumento tipoDoc= tipoDocumentoServicio.buscarPorId(Integer.parseInt(value));
-              //  return tipoDoc;
-            //} catch (NumberFormatException e) {
-               // throw  new ConverterException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error de Conversion", "No es un valor valido"));
-            //}
-       // }else{
+       
             return null;
-        //}
+        
     }
 
     @Override

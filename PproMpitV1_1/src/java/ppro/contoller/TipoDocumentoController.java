@@ -5,6 +5,7 @@
  */
 package ppro.contoller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.primefaces.context.RequestContext;
 import ppro.modelo.PproTipoDocumento;
@@ -24,8 +26,8 @@ import ppro.servicio.TipoDocumentoServicio;
  * @author casa
  */
 @ManagedBean
-@RequestScoped
-public class TipoDocumentoController {
+@SessionScoped
+public class TipoDocumentoController implements Serializable{
 
     @EJB
     private TipoDocumentoServicio tipoDocumentoServicio;

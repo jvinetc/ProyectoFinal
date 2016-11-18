@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -42,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PproFactura.findByFacObsevacion", query = "SELECT p FROM PproFactura p WHERE p.facObsevacion = :facObsevacion"),
     @NamedQuery(name = "PproFactura.findByFacDocId", query = "SELECT p FROM PproFactura p WHERE p.facDocId = :facDocId")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproFactura implements Serializable {
 
     

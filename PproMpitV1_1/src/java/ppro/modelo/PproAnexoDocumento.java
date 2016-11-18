@@ -8,6 +8,7 @@ package ppro.modelo;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PproAnexoDocumento.findByAneRuta", query = "SELECT p FROM PproAnexoDocumento p WHERE p.aneRuta = :aneRuta"),
     @NamedQuery(name = "PproAnexoDocumento.findByAneNota", query = "SELECT p FROM PproAnexoDocumento p WHERE p.aneNota = :aneNota")})
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class PproAnexoDocumento implements Serializable {
 
     @Size(max = 255)
